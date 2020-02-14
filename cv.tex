@@ -1,0 +1,449 @@
+\starttypescript[sans][opensans]
+  \definefontsynonym[OpenSansLight][name:opensanslight][features=default]
+  \definefontsynonym[OpenSansLightItalic][name:opensanslightitalic][features=default]
+  \definefontsynonym[OpenSansSemiBold][name:opensanssemibold][features=default]
+  \definefontsynonym[Sans][OpenSansLight][features=default]
+  \definefontsynonym[SansItalic][OpenSansLightItalic][features=default]
+  \definefontsynonym[SansBold][OpenSansSemiBold][features=default]
+  \definefontsynonym[SansSlanted][SansItalic][features=default]
+  \definefontsynonym[SansCaps][Sans][features=smallcaps]
+\stoptypescript
+
+\starttypescript[sans][bebasneue]
+  \definefontsynonym[BebasNeue][name:bebasneue][features=default]
+  \definefontsynonym[BebasNeueBold][name:bebasneuebold][features=default]
+  \definefontsynonym[Sans][BebasNeue][features=default]
+  \definefontsynonym[SansBold][BebasNeueBold][features=default]
+  \definefontsynonym[SansCaps][Sans][features=smallcaps]
+  \definetypeface[bebasneue][ss][sans][bebasneue]
+\stoptypescript
+
+\definetypeface[opensans][ss][sans][opensans]
+\setupbodyfont[opensans,ss,10pt]
+
+\definefont[SubjectFont][bebasneuebold at 18pt]
+\definefont[HeaderFont][bebasneuebold at 36pt]
+\definesymbol[1][-]
+
+\def\midheightline%
+  {\leavevmode \leaders \hrule height 0.7ex depth \dimexpr 0.4pt-0.7ex \hfill}
+
+\def\MyName{Rodrigo García León}
+\def\MyPhone{+31 (0)62 7211883}
+\def\MyEmail{yo@rodrigogarcia.me}
+
+\def\NameHeader{{\HeaderFont \MyName{}}}
+
+\def\SubjectTitle#1%
+  {\framed[width=broad,leftframe=off,topframe=off,rightframe=off]
+  {\rbox{\SubjectFont #1}}}
+
+\startsetups[header]
+  \hbox to \textwidth{
+    \framed[width=0.5\textwidth,frame=off,rightframe=on,align=inner,loffset=-.45ex]
+      {\NameHeader}
+    \quad
+    \framed[frame=off,align=right]
+      {\MyPhone \blank[small] \MyEmail}
+  }
+\stopsetups
+
+\startsetups[footer]
+  \midheightline \quad Amsterdam, \date
+\stopsetups
+
+\setupfooter[style={\switchtobodyfont[8pt] \em}]
+
+\setupheadertexts[\setups{header}]
+\setupfootertexts[\setups{footer}]
+
+\definehead
+  [Subject]
+  [subject]
+
+\setuphead
+  [Subject]
+  [deeptextcommand=\SubjectTitle,
+    after={\blank[medium]},
+    before={\blank[medium]}]
+
+\definextable
+  [myxtable]
+
+\setupxtable
+  [myxtable]
+  [split=yes,frame=off,columndistance=1em]
+
+\setupxtable
+  [languagestable]
+  [option=stretch,split=yes,frame=off,columndistance=1em]
+
+\startluacode
+    userdata = userdata or {}
+
+    function userdata.tableentry(date,activity,company,url,location,entries)
+      context("\\startxrow")
+      context("\\startxcell %s \\stopxcell",date)
+      context("\\startxcell \\bf %s \\tf",activity)
+      if not (company == nil or company == '') then
+        context(" at %s",company)
+      end
+      if not (url == nil or url == '') then
+        context(" (\\url[%s])",url)
+      end
+      if not (location == nil or location == '') then
+        context("\\crlf \\em %s \\tf \\blank[small]",location)
+      end
+      userdata.generateitems(entries)
+      context("\\stopxcell")
+      context("\\stopxrow")
+    end
+
+    function userdata.generateitems(entries)
+      context.startitemize { "joinedup", "nowhite" }
+      context("\\vbox{")
+    for index, value in ipairs(entries) do
+      context.startitem()
+      context(value)
+      context.stopitem()
+    end
+      context("}")
+    context.stopitemize()
+    end
+
+    interfaces.definecommand {
+    name = "TableEntry",
+    arguments = {
+      { "option", "string" },
+      { "option", "string" },
+      { "option", "string" },
+      { "option", "string" },
+      { "option", "string" },
+      { "content", "list" },
+    },
+    macro = userdata.tableentry,
+  }
+\stopluacode
+
+\setupinteraction[state=start]
+
+\useURL[scyfer][http://scyfer.nl/]
+\useURL[sowiso][http://sowiso.nl/]
+\useURL[cliq][http://cliqdigital.com/]
+\useURL[ementor][http://e-mentor.it/]
+\useURL[erica][http://www.riabilitazione.giuntios.it/it/]
+\useURL[abax][http://abaxasesores.com/]
+
+% Document start
+
+\setuplayout[width=185mm,height=270mm,margin=12.5mm,backspace=12.5mm,topspace=12.5mm]
+
+\starttext
+
+\Subject{Personal Details}
+
+\startxtable[myxtable]
+  \startxrow
+    \startxcell Name \stopxcell
+    \startxcell \MyName{} \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell Address \stopxcell
+    \startxcell Nieuwe Looiersstraat 12-A \stopxcell
+    \stopxrow
+  \startxrow
+    \startxcell Postal Code \stopxcell
+    \startxcell 1017VC \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell City - Country \stopxcell
+    \startxcell Amsterdam, Nederland \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell Date of Birth \stopxcell
+    \startxcell 2nd June, 1986 \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell Nationality \stopxcell
+    \startxcell Costa Rican - Italian \stopxcell
+  \stopxrow
+\stopxtable
+
+\Subject{Working Experience}
+
+\startxtable[myxtable]
+  \TableEntry
+    [5/2017 - present]
+    [Full Stack Developer]
+    [Scyfer]
+    [scyfer]
+    [Amsterdam, Nederland]
+    {
+      Designed and deployed a microservices based architecture for a machine learning platform on Amazon Web Services using Docker,
+      Developed an API with Python 3 using Django{,} Tensorflow and a PostgreSQL data store,
+      Developed an UI with TypeScript using Aurelia
+    }
+  \TableEntry
+    [1/2016 - 4/2017]
+    [Full Stack Developer]
+    [SOWISO]
+    [sowiso]
+    [Amsterdam, Nederland]
+    {
+      Developed an analytics reporting module using ES6{,} Webpack{,} PHP and MySQL,
+      Developed specialized exercises for physics teaching using Maxima for math evaluation,
+      Developed data transformation scripts from LaTeX to XML for content import using Python,
+      Maintained the application platform in Amazon Web Services{,} using Puppet for provisioning and Jenkins for test automation and continuous integration and deployment
+    }
+  \TableEntry
+    [11/2011 - 6/2013]
+    [Software Developer]
+    [e-Mentor]
+    [ementor]
+    [Torino, Italia]
+    {
+      Developed a set of specialized exercises for neuropsychological
+      rehabilitation software (\url[erica]),
+      Developed a group of learning modules for in-house personnel training
+      based on visual merchandising principles
+    }
+  \TableEntry
+    [8/2008 - 5/2010]
+    [System Administrator]
+    [Abax Asesores]
+    [abax]
+    [San José, Costa Rica]
+    {
+      Deployed and maintained LAMP stack servers,
+      Task automation using Bash and Python
+    }
+  \TableEntry
+    [2/2008 - 12/2010]
+    [Lecturer]
+    [University of Costa Rica]
+    []
+    [San José, Costa Rica]
+    {
+      Instructed the course "Electronics 3" on basic power electronics. Senior
+      level compulsory course,
+      Instructed the course "Microcontroller Laboratory" on practical
+      applications of Atmel ATmega microcontrollers. Senior level elective
+      course
+    }
+\stopxtable
+
+\Subject{Education}
+
+\startxtable[myxtable]
+  \TableEntry
+    [9/2013 - 12/2015]
+    [Master Human-Technology Interaction]
+    [Eindhoven University of Technology]
+    {
+      ICT track; coursework in Data Visualization and Machine Learning among others
+    }
+  \TableEntry
+    [2/2008 - 8/2010]
+    [Licentiate Electrical Engineering]
+    [University of Costa Rica]
+    {
+      Emphasis in Communication Systems,
+      Judged substantially equivalent by the Canadian Engineering Accreditation
+      Board of Engineers Canada since the year 2000
+    }
+  \TableEntry
+    [2/2004 - 12/2007]
+    [Bachelor Electrical Engineering]
+    [University of Costa Rica]
+    {
+      Emphasis in Computers and Networks
+    }
+\stopxtable
+
+\Subject{Interesting Projects}
+
+\startxtable[myxtable]
+  \TableEntry
+    [9/2013 - 1/2014]
+    [Group Pulse]
+    [Eindhoven University of Technology]
+    {
+      Qualitative research on how physiological measurements could boost teamwork productivity
+    }
+  \TableEntry
+    [2/2014 - 6/2014]
+    [Fighting Winter Blues]
+    [Eindhoven University of Technology]
+    {
+      Quantitative research on which architectural and behavioral factors
+      predict prevalence of subsyndromal seasonal affective disorder (winter
+      depression)
+    }
+  \TableEntry
+    [9/2014 - 2/2015]
+    [Heartbeat Entrainment and Audiovisual Stimuli]
+    [Eindhoven University of Technology]
+    {
+      Experimental research on how to achieve heartbeat entrainment
+      (synchronization of individuals heartbeat rate to the frequency of
+      audiovisual stimuli)
+    }
+\stopxtable
+
+\Subject{Skills}
+
+\startxtable[myxtable]
+  \startxrow
+    \startxcell
+      Programming Languages
+    \stopxcell
+    \startxcell
+      Python, JavaScript, TypeScript, SQL, Bash, Ruby, Go, Java, Clojure, R, Haskell, Swift, LaTeX
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Frameworks
+    \stopxcell
+    \startxcell
+      Django, Tensorflow, Ansible, Puppet, Aurelia, React, D3, Processing
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Tools
+    \stopxcell
+    \startxcell
+      Git, Vim, Emacs, Docker, nginx, Webpack, Selenium, Jenkins, Bitbucket, JIRA, PostgreSQL
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Operating Systems
+    \stopxcell
+    \startxcell
+      macOS, Arch Linux, Ubuntu Linux, Debian Linux, Gentoo Linux, CentOS Linux, Windows
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Platforms
+    \stopxcell
+    \startxcell
+      Amazon Web Services, Digital Ocean
+    \stopxcell
+  \stopxrow
+\stopxtable
+
+\Subject{Language Knowledge}
+
+\startxtable[languagestable]
+  \startxrow
+    \startxcell
+      {\bf Language}
+    \stopxcell
+    \startxcell
+      {\bf Speak}
+    \stopxcell
+    \startxcell
+      {\bf Understand}
+    \stopxcell
+    \startxcell
+      {\bf Read}
+    \stopxcell
+    \startxcell
+      {\bf Write}
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Spanish
+    \stopxcell
+    \startxcell
+      native
+    \stopxcell
+    \startxcell
+      native
+    \stopxcell
+    \startxcell
+      native
+    \stopxcell
+    \startxcell
+      native
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      English
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+    \startxcell
+      perfect
+    \stopxcell
+    \startxcell
+      perfect
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Italian
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+    \startxcell
+      very good
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Dutch
+    \stopxcell
+    \startxcell
+      good
+    \stopxcell
+    \startxcell
+      good
+    \stopxcell
+    \startxcell
+      good
+    \stopxcell
+    \startxcell
+      good
+    \stopxcell
+  \stopxrow
+\stopxtable
+
+\Subject{Interests}
+
+\startxtable[myxtable]
+  \startxrow
+    \startxcell
+      Music
+    \stopxcell
+    \startxcell
+      Keyboard, guitar, Ableton Live, Native Instruments
+    \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell
+      Sports
+    \stopxcell
+    \startxcell
+      Squash, fitness
+    \stopxcell
+  \stopxrow
+\stopxtable
+
+\stoptext
